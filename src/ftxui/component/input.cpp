@@ -5,6 +5,7 @@
 #include <string>      // for string, wstring
 #include <utility>     // for move
 #include <vector>      // for vector
+#include <map>
 
 #include "ftxui/component/captured_mouse.hpp"     // for CapturedMouse
 #include "ftxui/component/component.hpp"          // for Make, Input
@@ -31,6 +32,12 @@ std::string PasswordField(size_t size) {
   }
   return out;
 }
+
+auto to_apl = std::unordered_map<std::string, std::string> {
+  {"i", "⍳"},
+  {"s", "⌈"},
+  {"}", "⊢"}
+};
 
 // An input box. The user can type text into it.
 class InputBase : public ComponentBase {
@@ -115,6 +122,10 @@ class InputBase : public ComponentBase {
 
     std::string c;
 
+    if (event != Event::Backtick and not event.is_character()) {
+      backtick_ = false;
+    }
+
     // Backspace.
     if (event == Event::Backspace) {
       if (cursor_position() == 0) {
@@ -173,10 +184,21 @@ class InputBase : public ComponentBase {
 
     // Content
     if (event.is_character()) {
-      size_t start = GlyphPosition(*content_, cursor_position());
-      content_->insert(start, event.character());
-      cursor_position()++;
-      option_->on_change();
+      if (not backtick_) {
+        if (event == Event::Backtick) {
+          backtick_ = true;
+        }
+        size_t start = GlyphPosition(*content_, cursor_position());
+        content_->insert(start, event.character());
+        cursor_position()++;
+        option_->on_change();
+      } else {
+        size_t start = GlyphPosition(*content_, cursor_position()) - 1;
+        content_->erase(start, 1);
+        content_->insert(start, to_apl[event.character()]);
+        option_->on_change();
+        backtick_ = false;
+      }
       return true;
     }
     return false;
@@ -229,6 +251,7 @@ class InputBase : public ComponentBase {
   bool hovered_ = false;
   StringRef content_;
   ConstStringRef placeholder_;
+  bool backtick_ = false;
 
   Box box_;
   Box cursor_box_;
