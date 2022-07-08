@@ -36,7 +36,8 @@ std::string PasswordField(size_t size) {
 auto to_apl = std::unordered_map<std::string, std::string> {
   {"i", "⍳"},
   {"s", "⌈"},
-  {"}", "⊢"}
+  {"}", "⊢"},
+  {"%", "⌽"}
 };
 
 // An input box. The user can type text into it.
