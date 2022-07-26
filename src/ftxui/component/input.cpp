@@ -1,11 +1,11 @@
 #include <algorithm>   // for max, min
 #include <cstddef>     // for size_t
 #include <functional>  // for function
-#include <memory>      // for shared_ptr, allocator
-#include <string>      // for string, wstring
-#include <utility>     // for move
-#include <vector>      // for vector
 #include <map>
+#include <memory>   // for shared_ptr, allocator
+#include <string>   // for string, wstring
+#include <utility>  // for move
+#include <vector>   // for vector
 
 #include "ftxui/component/captured_mouse.hpp"     // for CapturedMouse
 #include "ftxui/component/component.hpp"          // for Make, Input
@@ -33,12 +33,16 @@ std::string PasswordField(size_t size) {
   return out;
 }
 
+// clang-format off
 auto to_apl = std::unordered_map<std::string, std::string> {
   {"i", "⍳"},
   {"s", "⌈"},
   {"}", "⊢"},
-  {"%", "⌽"}
+  {"%", "⌽"},
+  {"-", "×"},
+  {"r", "⍴"}
 };
+// clang-format on
 
 // An input box. The user can type text into it.
 class InputBase : public ComponentBase {
